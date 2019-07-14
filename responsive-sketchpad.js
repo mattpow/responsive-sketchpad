@@ -25,6 +25,7 @@
     }
 
     opts = opts || {};
+    let isInDrawMode = true
     var strokes = [];
     var undos = [];
 
@@ -179,37 +180,43 @@
 
     // On mouse down, create a new stroke with a start location
     function startLine(e) {
-      e.preventDefault();
+      console.log(that.isInDrawMode);
+      
+      if (that.isInDrawMode) {
+        e.preventDefault();
 
-      strokes = that.strokes;
-      sketching = true;
-      that.undos = [];
-
-      var cursor = getCursorRelativeToCanvas(e);
-      strokes.push({
-        points: [cursor],
-        color: opts.line.color,
-        size: getLineSizeRelativeToCanvas(opts.line.size),
-        cap: opts.line.cap,
-        join: opts.line.join,
-        miterLimit: opts.line.miterLimit
-      });
+        strokes = that.strokes;
+        sketching = true;
+        that.undos = [];
+  
+        var cursor = getCursorRelativeToCanvas(e);
+        strokes.push({
+          points: [cursor],
+          color: opts.line.color,
+          size: getLineSizeRelativeToCanvas(opts.line.size),
+          cap: opts.line.cap,
+          join: opts.line.join,
+          miterLimit: opts.line.miterLimit
+        });
+      }
     }
 
     function drawLine(e) {
-      if (!sketching) {
-        return;
+      if (that.isInDrawMode) {
+        if (!sketching) {
+          return;
+        }
+  
+        e.preventDefault();
+  
+        var cursor = getCursorRelativeToCanvas(e);
+        that.strokes[strokes.length - 1].points.push({
+          x: cursor.x,
+          y: cursor.y
+        });
+  
+        that.redraw();
       }
-
-      e.preventDefault();
-
-      var cursor = getCursorRelativeToCanvas(e);
-      that.strokes[strokes.length - 1].points.push({
-        x: cursor.x,
-        y: cursor.y
-      });
-
-      that.redraw();
     }
 
     function endLine(e) {
@@ -255,6 +262,7 @@
     this.strokes = strokes;
     this.undos = undos;
     this.opts = opts;
+    this.isInDrawMode = isInDrawMode
 
     // Public functions
     this.redraw = redraw;
