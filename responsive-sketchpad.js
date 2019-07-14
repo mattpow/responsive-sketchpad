@@ -180,8 +180,6 @@
 
     // On mouse down, create a new stroke with a start location
     function startLine(e) {
-      console.log(that.isInDrawMode);
-      
       if (that.isInDrawMode) {
         e.preventDefault();
 
